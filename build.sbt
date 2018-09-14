@@ -162,7 +162,7 @@ lazy val userImpl = (project in file("user-impl"))
       lagomScaladslPersistenceCassandra,
       macwire,
       scalaTest
-    )
+    ) ++ cinnamonDependencies
   )
 
 lazy val webGateway = (project in file("web-gateway"))
