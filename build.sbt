@@ -14,9 +14,21 @@ scalaVersion in ThisBuild := "2.12.4"
 
 version in ThisBuild := "1.0.0-SNAPSHOT"
 
+// enable cinnamon
+//lazy val app = project in file(".") enablePlugins (Cinnamon)
+
 val playJsonDerivedCodecs = "org.julienrf" %% "play-json-derived-codecs" % "4.0.0"
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.2.5" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
+val cinnamonDependencies = Seq(
+  Cinnamon.library.cinnamonCHMetrics3,
+  Cinnamon.library.cinnamonAkka,
+  Cinnamon.library.cinnamonAkkaHttp,
+  Cinnamon.library.cinnamonJvmMetricsProducer,
+  Cinnamon.library.cinnamonLagom,
+  Cinnamon.library.cinnamonPrometheus,
+  Cinnamon.library.cinnamonPrometheusHttpServer
+)
 
 lazy val security = (project in file("security"))
   .settings(commonSettings: _*)
@@ -143,7 +155,7 @@ lazy val userApi = (project in file("user-api"))
 
 lazy val userImpl = (project in file("user-impl"))
   .settings(commonSettings: _*)
-  .enablePlugins(LagomScala, SbtReactiveAppPlugin)
+  .enablePlugins(LagomScala, SbtReactiveAppPlugin, Cinnamon)
   .dependsOn(userApi)
   .settings(
     libraryDependencies ++= Seq(
