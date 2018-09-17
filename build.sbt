@@ -20,14 +20,23 @@ version in ThisBuild := "1.0.0-SNAPSHOT"
 val playJsonDerivedCodecs = "org.julienrf" %% "play-json-derived-codecs" % "4.0.0"
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.2.5" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
-val cinnamonDependencies = Seq(
-  Cinnamon.library.cinnamonCHMetrics3,
-  Cinnamon.library.cinnamonAkka,
-  Cinnamon.library.cinnamonAkkaHttp,
-  Cinnamon.library.cinnamonJvmMetricsProducer,
-  Cinnamon.library.cinnamonLagom,
-  Cinnamon.library.cinnamonPrometheus,
-  Cinnamon.library.cinnamonPrometheusHttpServer
+
+// Add to project to enable cinnamon and prometheus scraping.
+lazy val cinnamonSettings = Seq(
+   libraryDependencies ++= Seq(
+    Cinnamon.library.cinnamonCHMetrics3,
+    Cinnamon.library.cinnamonAkka,
+    Cinnamon.library.cinnamonAkkaHttp,
+    Cinnamon.library.cinnamonJvmMetricsProducer,
+    Cinnamon.library.cinnamonLagom,
+    Cinnamon.library.cinnamonPrometheus,
+    Cinnamon.library.cinnamonPrometheusHttpServer
+  ),
+  endpoints += TcpEndpoint("metrics", 9091, None),
+  annotations := Map(
+    // enable scraping
+    "prometheus.io/scrape" -> "true"
+  )
 )
 
 lazy val security = (project in file("security"))
@@ -62,7 +71,8 @@ lazy val itemImpl = (project in file("item-impl"))
       "com.datastax.cassandra" % "cassandra-driver-extras" % "3.0.0",
       macwire,
       scalaTest
-    )
+    ),
+    cinnamonSettings
   )
   .settings(lagomForkedTestSettings: _*)
   .dependsOn(itemApi, biddingApi)
@@ -89,7 +99,8 @@ lazy val biddingImpl = (project in file("bidding-impl"))
       macwire,
       scalaTest
     ),
-    maxErrors := 10000
+    maxErrors := 10000,
+    cinnamonSettings
 
   )
 
@@ -114,7 +125,8 @@ lazy val searchImpl = (project in file("search-impl"))
       lagomScaladslTestKit,
       macwire,
       scalaTest
-    )
+    ),
+    cinnamonSettings
   )
 
 lazy val transactionApi = (project in file("transaction-api"))
@@ -162,7 +174,8 @@ lazy val userImpl = (project in file("user-impl"))
       lagomScaladslPersistenceCassandra,
       macwire,
       scalaTest
-    ) ++ cinnamonDependencies
+    ),
+    cinnamonSettings
   )
 
 lazy val webGateway = (project in file("web-gateway"))
