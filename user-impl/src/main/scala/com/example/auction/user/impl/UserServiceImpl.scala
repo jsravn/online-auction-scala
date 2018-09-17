@@ -7,15 +7,17 @@ import akka.persistence.cassandra.query.scaladsl.CassandraReadJournal
 import akka.persistence.query.PersistenceQuery
 import akka.stream.Materializer
 import akka.stream.scaladsl.Sink
+import com.example.auction.item.api.ItemService
 import com.example.auction.user.api
 import com.example.auction.user.api.UserService
 import com.lightbend.lagom.scaladsl.api.ServiceCall
 import com.lightbend.lagom.scaladsl.api.transport.NotFound
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntityRegistry
 
+import scala.util.{Success, Failure}
 import scala.concurrent.ExecutionContext
 
-class UserServiceImpl(registry: PersistentEntityRegistry, system: ActorSystem)(implicit ec: ExecutionContext, mat: Materializer) extends UserService {
+class UserServiceImpl(registry: PersistentEntityRegistry, system: ActorSystem, itemService: ItemService)(implicit ec: ExecutionContext, mat: Materializer) extends UserService {
 
   private val currentIdsQuery = PersistenceQuery(system).readJournalFor[CassandraReadJournal](CassandraReadJournal.Identifier)
 
@@ -36,6 +38,13 @@ class UserServiceImpl(registry: PersistentEntityRegistry, system: ActorSystem)(i
   }
 
   override def getUsers = ServiceCall { _ =>
+    // to test out circuit breakers... I hope.
+    println("**********************")
+    val result = itemService.getItem(UUID.randomUUID()).invoke()
+    result.onComplete {
+      case Success(r) => println("success: " + r.toString)
+      case Failure(t) => println("failure: " + t.getMessage)
+    }
     // Note this should never make production....
     currentIdsQuery.currentPersistenceIds()
       .filter(_.startsWith("UserEntity|"))

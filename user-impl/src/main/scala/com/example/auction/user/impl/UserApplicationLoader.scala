@@ -1,5 +1,6 @@
 package com.example.auction.user.impl
 
+import com.example.auction.item.api.ItemService
 import com.example.auction.user.api.UserService
 import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import com.lightbend.lagom.scaladsl.persistence.cassandra.CassandraPersistenceComponents
@@ -15,6 +16,8 @@ abstract class UserApplication(context: LagomApplicationContext)
 
   override lazy val lagomServer = serverFor[UserService](wire[UserServiceImpl])
   override lazy val jsonSerializerRegistry = UserSerializerRegistry
+
+  lazy val itemService = serviceClient.implement[ItemService]
 
   persistentEntityRegistry.register(wire[UserEntity])
 }
