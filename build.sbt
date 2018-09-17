@@ -62,7 +62,7 @@ lazy val itemApi = (project in file("item-api"))
 
 lazy val itemImpl = (project in file("item-impl"))
   .settings(commonSettings: _*)
-  .enablePlugins(LagomScala, SbtReactiveAppPlugin)
+  .enablePlugins(LagomScala, SbtReactiveAppPlugin, Cinnamon)
   .settings(
     libraryDependencies ++= Seq(
       lagomScaladslPersistenceCassandra,
@@ -89,7 +89,7 @@ lazy val biddingApi = (project in file("bidding-api"))
 
 lazy val biddingImpl = (project in file("bidding-impl"))
   .settings(commonSettings: _*)
-  .enablePlugins(LagomScala, SbtReactiveAppPlugin)
+  .enablePlugins(LagomScala, SbtReactiveAppPlugin, Cinnamon)
   .dependsOn(biddingApi, itemApi)
   .settings(
     libraryDependencies ++= Seq(
@@ -116,7 +116,7 @@ lazy val searchApi = (project in file("search-api"))
 
 lazy val searchImpl = (project in file("search-impl"))
   .settings(commonSettings: _*)
-  .enablePlugins(LagomScala, SbtReactiveAppPlugin)
+  .enablePlugins(LagomScala, SbtReactiveAppPlugin, Cinnamon)
   .dependsOn(searchApi, itemApi, biddingApi)
   .settings(
     libraryDependencies ++= Seq(
