@@ -24,7 +24,7 @@ val scalaTest = "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 // Add to project to enable cinnamon and prometheus scraping.
 lazy val cinnamonSettings = Seq(
    libraryDependencies ++= Seq(
-//    Cinnamon.library.cinnamonCHMetrics3,
+    Cinnamon.library.cinnamonCHMetrics3,
     Cinnamon.library.cinnamonAkka,
     Cinnamon.library.cinnamonAkkaHttp,
     Cinnamon.library.cinnamonJvmMetricsProducer,
