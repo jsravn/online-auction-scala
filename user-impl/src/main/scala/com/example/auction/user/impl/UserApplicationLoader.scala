@@ -1,7 +1,9 @@
 package com.example.auction.user.impl
 
+import cinnamon.lagom.CircuitBreakerInstrumentation
 import com.example.auction.item.api.ItemService
 import com.example.auction.user.api.UserService
+import com.lightbend.lagom.internal.spi.CircuitBreakerMetricsProvider
 import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import com.lightbend.lagom.scaladsl.persistence.cassandra.CassandraPersistenceComponents
 import com.lightbend.lagom.scaladsl.server._
@@ -16,6 +18,10 @@ abstract class UserApplication(context: LagomApplicationContext)
 
   override lazy val lagomServer = serverFor[UserService](wire[UserServiceImpl])
   override lazy val jsonSerializerRegistry = UserSerializerRegistry
+
+  // Wire up the Cinnamon circuit breaker instrumentation
+  override lazy val circuitBreakerMetricsProvider: CircuitBreakerMetricsProvider =
+    wire[CircuitBreakerInstrumentation]
 
   lazy val itemService = serviceClient.implement[ItemService]
 
